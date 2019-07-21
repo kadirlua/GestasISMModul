@@ -1,0 +1,36 @@
+CREATE TABLE IF NOT EXISTS users(user_id int AUTO_INCREMENT PRIMARY KEY, register_number int, name varchar(100), username varchar(128), password varchar(128), user_type int, tel_no varchar(32), email varchar(128))ENGINE=INNODB;
+
+CREATE TABLE IF NOT EXISTS boat(boat_id int AUTO_INCREMENT PRIMARY KEY, boat_name VARCHAR(255))ENGINE=INNODB;
+
+CREATE TABLE IF NOT EXISTS category(category_id INT AUTO_INCREMENT PRIMARY KEY, category_name VARCHAR(255))ENGINE=INNODB;
+
+CREATE TABLE IF NOT EXISTS comments(comment_id int AUTO_INCREMENT PRIMARY KEY, comment_desc TEXT, who_commented int NOT NULL, created_date DATE, FOREIGN KEY(who_commented) REFERENCES users(user_id))ENGINE=INNODB;
+
+CREATE TABLE IF NOT EXISTS work_list(work_list_id int AUTO_INCREMENT PRIMARY KEY, form_name VARCHAR(255), form_code VARCHAR(32), state int, category_id int not null, boat_id int not null, created_date date, who_created int not null, FOREIGN KEY(category_id) REFERENCES category(category_id), FOREIGN KEY(boat_id) REFERENCES boat(boat_id), FOREIGN KEY(who_created) REFERENCES users(user_id))ENGINE=INNODB;
+
+CREATE TABLE IF NOT EXISTS work(work_id int AUTO_INCREMENT PRIMARY KEY, work_code VARCHAR(32), work_name VARCHAR(32), work_state int, work_desc TEXT(500), who_created int not null, work_list_id int not null, FOREIGN KEY(who_created) REFERENCES users(user_id), FOREIGN KEY(work_list_id) REFERENCES work_list(work_list_id))ENGINE=INNODB;
+
+CREATE TABLE IF NOT EXISTS employee_list(employee_list_id int AUTO_INCREMENT PRIMARY KEY, work_list_id int not null, employee_id int not null, FOREIGN KEY(work_list_id) REFERENCES work_list(work_list_id), FOREIGN KEY(employee_id) REFERENCES users(user_id))ENGINE=INNODB;
+
+CREATE TABLE IF NOT EXISTS log_msg(log_id int AUTO_INCREMENT PRIMARY KEY, log_level int ,log_detail varchar(500), created_time date, employee_id int not null, FOREIGN KEY(employee_id) REFERENCES users(user_id))ENGINE=INNODB;  
+
+CREATE TRIGGER `delete_work_list` BEFORE DELETE ON `work_list`
+ FOR EACH ROW DELETE FROM work WHERE work.work_list_id=OLD.work_list_id;
+ 
+ CREATE TRIGGER `delete_employee_list` BEFORE DELETE ON `work_list`
+ FOR EACH ROW DELETE FROM employee_list WHERE employee_list.work_list_id=OLD.work_list_id;
+ 
+ 
+ CREATE TABLE IF NOT EXISTS department(department_id int AUTO_INCREMENT PRIMARY KEY, department_name varchar(255))ENGINE=INNODB; 
+ 
+ CREATE TABLE IF NOT EXISTS circular_list(circular_list_id int AUTO_INCREMENT PRIMARY KEY, form_number varchar(32), form_type int not null, form_state int, who_created int not null, department_id int not null, created_date date not null, subject text(500) not null, content text(1000), FOREIGN KEY(who_created) REFERENCES users(user_id), FOREIGN KEY(department_id) REFERENCES department(department_id))ENGINE=INNODB;
+ 
+ CREATE TABLE IF NOT EXISTS files(files_id int AUTO_INCREMENT PRIMARY KEY, file LONGBLOB not null, content_type varchar(255), file_name varchar(255), circular_list_id int not null, FOREIGN KEY(circular_list_id) REFERENCES circular_list(circular_list_id))ENGINE=INNODB;
+ 
+ CREATE TABLE IF NOT EXISTS employee_circular_list(employee_circular_list_id int AUTO_INCREMENT PRIMARY KEY, state int, circular_list_id int not null, employee_circular_id int not null, FOREIGN KEY(circular_list_id) REFERENCES circular_list(circular_list_id), FOREIGN KEY(employee_circular_id) REFERENCES users(user_id))ENGINE=INNODB;
+ 
+ CREATE TRIGGER `delete_circular_employee_list` BEFORE DELETE ON `circular_list` FOR EACH ROW DELETE FROM employee_circular_list WHERE employee_circular_list.circular_list_id=OLD.circular_list_id;
+ 
+ CREATE TRIGGER `delete_circular_file_list` BEFORE DELETE ON `circular_list` FOR EACH ROW DELETE FROM files WHERE files.circular_list_id=OLD.circular_list_id;
+
+CREATE TRIGGER `update_circular_list_state` AFTER UPDATE ON `employee_circular_list` FOR EACH ROW UPDATE circular_list SET form_state=0 WHERE circular_list_id=NEW.circular_list_id AND (SELECT COUNT(*) as total FROM employee_circular_list WHERE circular_list_id=NEW.circular_list_id)=(SELECT COUNT(*) as needed FROM employee_circular_list WHERE state='0' AND circular_list_id=NEW.circular_list_id);

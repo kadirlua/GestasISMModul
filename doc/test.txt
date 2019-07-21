@@ -1,0 +1,17 @@
+INSERT INTO category VALUES(NULL, 'GV');
+INSERT INTO category VALUES(NULL, 'MK');
+INSERT INTO category VALUES(NULL, 'TMK');
+INSERT INTO category VALUES(NULL, 'TGV');
+
+INSERT INTO boat VALUES(NULL, 'Çanakkale Gemisi');
+INSERT INTO boat VALUES(NULL, 'Lapseki Gemisi');
+INSERT INTO boat VALUES(NULL, 'Bozcaada Gemisi');
+
+INSERT INTO users VALUES(NULL,'123456','Kadir ALTINDAĞ','kadir','123456',1,'+905418904263','kadir_altindag@outlook.com');
+INSERT INTO users VALUES(NULL,'123456','Gülcan ALTINDAĞ','gulcan','123456',1,'+905428904133','gulcan_altindag@outlook.com');
+INSERT INTO users VALUES(NULL,'123456','İlyas Tüzün','ilyas','123456',1,'+905455202295','ilyas_tuzun@outlook.com');
+INSERT INTO users VALUES(NULL,'987654','Erdem KAYA','erdem','123456',2,'+905418745632','erdem_kaya@gmail.com');
+INSERT INTO users VALUES(NULL,'123456','Eren KAYA','eren','123456',3,'+905452561267','eren_kaya@outlook.com');
+
+INSERT INTO department VALUES(NULL, 'DPA');
+INSERT INTO department VALUES(NULL, 'Teknik Müdürlük');
